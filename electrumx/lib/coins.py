@@ -1623,9 +1623,9 @@ class Validity(ScryptMixin, Coin):
     WIF_BYTE = bytes.fromhex("79")
     GENESIS_HASH = ('000000770c6aea829bb1ace7b06497f7'
                     '1799a6358e0e292740c4f9443a17bfb6')
-    TX_COUNT = 1015611
-    TX_COUNT_HEIGHT = 3046833
-    TX_PER_BLOCK = 3
+    TX_COUNT = 6186296
+    TX_COUNT_HEIGHT = 3046872
+    TX_PER_BLOCK = 2
     RPC_PORT = 27914
     REORG_LIMIT = 500
 
