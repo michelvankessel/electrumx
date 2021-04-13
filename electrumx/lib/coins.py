@@ -1612,6 +1612,22 @@ class Einsteinium(Coin):
     RPC_PORT = 41879
     REORG_LIMIT = 2000
 
+class Validity(ScryptMixin, Coin):
+    NAME = "Validity"
+    SHORTNAME = "VAL"
+    NET = "mainnet"
+    XPUB_VERBYTES = bytes.fromhex("0473AAA1")
+    XPRV_VERBYTES = bytes.fromhex("04734477")
+    P2PKH_VERBYTE = bytes.fromhex("4C")
+    P2SH_VERBYTES = (bytes.fromhex("3A"),)
+    WIF_BYTE = bytes.fromhex("79")
+    GENESIS_HASH = ('000000770c6aea829bb1ace7b06497f7'
+                    '1799a6358e0e292740c4f9443a17bfb6')
+    TX_COUNT = 1015611
+    TX_COUNT_HEIGHT = 3046833
+    TX_PER_BLOCK = 3
+    RPC_PORT = 27914
+    REORG_LIMIT = 500
 
 class Blackcoin(ScryptMixin, Coin):
     NAME = "Blackcoin"
