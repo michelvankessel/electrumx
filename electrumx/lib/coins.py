@@ -592,7 +592,7 @@ class BitcoinSV(BitcoinMixin, Coin):
 
 
 class BitcoinCash(BitcoinMixin, Coin):
-    NAME = "BitcoinCashABC"   # Some releases later remove the ABC suffix
+    NAME = "BitcoinCash"
     SHORTNAME = "BCH"
     TX_COUNT = 265479628
     TX_COUNT_HEIGHT = 556592
@@ -600,7 +600,10 @@ class BitcoinCash(BitcoinMixin, Coin):
     PEERS = [
         'bch.imaginary.cash s t',
         'electroncash.dk s t',
-        'wallet.satoshiscoffeehouse.com s t',
+        'electrum.imaginary.cash s t',
+        'bch.loping.net s t',
+        'electroncash.de s t',
+        'blackie.c3-soft.com s t',
     ]
     BLOCK_PROCESSOR = block_proc.LTORBlockProcessor
 
@@ -858,7 +861,7 @@ class BitcoinSVScalingTestnet(BitcoinSVTestnet):
 
 class BitcoinCashTestnet(BitcoinTestnetMixin, Coin):
     '''Bitcoin Testnet for Bitcoin Cash daemons.'''
-    NAME = "BitcoinCashABC"
+    NAME = "BitcoinCash"
     PEERS = [
         'bch0.kister.net t s',
         'testnet.imaginary.cash t50001 s50002',
@@ -929,6 +932,20 @@ class BitcoinRegtest(BitcoinTestnet):
 
 
 class BitcoinSegwitRegtest(BitcoinRegtest):
+    NAME = "BitcoinSegwit"  # support legacy name
+
+
+class BitcoinSignet(BitcoinTestnet):
+    NAME = "Bitcoin"
+    NET = "signet"
+    GENESIS_HASH = ('00000008819873e925422c1ff0f99f7c'
+                    'c9bbb232af63a077a480a3633bee1ef6')
+    PEERS = []
+    TX_COUNT = 1
+    TX_COUNT_HEIGHT = 1
+
+
+class BitcoinSegwitSignet(BitcoinSignet):
     NAME = "BitcoinSegwit"  # support legacy name
 
 
@@ -1029,7 +1046,7 @@ class LitecoinRegtest(LitecoinTestnet):
 
 
 class BitcoinCashRegtest(BitcoinTestnetMixin, Coin):
-    NAME = "BitcoinCashABC"   # Some releases later remove the ABC suffix
+    NAME = "BitcoinCash"
     NET = "regtest"
     PEERS = []
     GENESIS_HASH = ('0f9188f13cb7b2c71f2a335e3a4fc328'
@@ -1748,6 +1765,9 @@ class PeercoinTestnet(Peercoin):
     GENESIS_HASH = ('00000001f757bb737f6596503e17cd17'
                     'b0658ce630cc727c0cca81aec47c9f06')
     ESTIMATE_FEE = 0.001
+    PEERS = [
+        "testnet-electrum.peercoinexplorer.net s"
+    ]
 
 
 class Trezarcoin(Coin):
@@ -3504,6 +3524,38 @@ class Simplicity(Coin):
             return double_sha256(header)
 
 
+class ElectraProtocol(Coin):
+    NAME = 'ElectraProtocol'
+    SHORTNAME = 'XEP'
+    NET = 'mainnet'
+    XPUB_VERBYTES = bytes.fromhex('0488b21e')
+    XPRV_VERBYTES = bytes.fromhex('0488ade4')
+    P2PKH_VERBYTE = bytes.fromhex('37')
+    P2SH_VERBYTE = bytes.fromhex('89')
+    WIF_BYTE = bytes.fromhex('a2')
+    GENESIS_HASH = '000000954c02f260a6db02c712557adcb5a7a8a0a9acfd3d3c2b3a427376c56f'
+    RPC_PORT = 16816
+    TX_COUNT = 264299
+    TX_COUNT_HEIGHT = 130000
+    TX_PER_BLOCK = 5
+    REORG_LIMIT = 1080
+    DESERIALIZER = lib_tx.DeserializerSegWit
+    PEERS = [
+        'electrumx1.electraprotocol.eu s t',
+        'electrumx2.electraprotocol.eu s t',
+        'electrumx3.electraprotocol.eu s t',
+        'electrumx4.electraprotocol.eu s t',
+        'electrumx5.electraprotocol.eu s t',
+    ]
+
+    @classmethod
+    def genesis_block(cls, block):
+        super().genesis_block(block)
+
+        # XEP has spendable genesis outputs, so we return the full block here.
+        return block
+
+
 class Myce(Coin):
     NAME = "Myce"
     SHORTNAME = "YCE"
@@ -3661,6 +3713,7 @@ class Defcoin(Coin):
     TX_PER_BLOCK = 1
     RPC_PORT = 9386
     REORG_LIMIT = 5000
+    DESERIALIZER = lib_tx.DeserializerAuxPowSegWit
 
 
 class Auroracoin(Coin):
@@ -3954,3 +4007,21 @@ class Beyondcoin(Coin):
     TX_PER_BLOCK = 2
     RPC_PORT = 10332
     REORG_LIMIT = 5000
+
+
+class Syscoin(AuxPowMixin, Coin):
+    NAME = "Syscoin"
+    SHORTNAME = "SYS"
+    NET = "mainnet"
+    P2PKH_VERBYTE = bytes.fromhex("3f")
+    P2SH_VERBYTES = (bytes.fromhex("05"),)
+    WIF_BYTE = bytes.fromhex("80")
+    GENESIS_HASH = ('0000022642db0346b6e01c2a397471f4'
+                    'f12e65d4f4251ec96c1f85367a61a7ab')
+    DESERIALIZER = lib_tx.DeserializerAuxPowSegWit
+    TX_COUNT = 911232
+    TX_COUNT_HEIGHT = 954572
+    TX_PER_BLOCK = 1
+    RPC_PORT = 8370
+    REORG_LIMIT = 2000
+    CHUNK_SIZE = 360
