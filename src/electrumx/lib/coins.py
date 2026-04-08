@@ -1664,12 +1664,11 @@ class Blackcoin(ScryptMixin, Coin):
     TX_PER_BLOCK = 3
     RPC_PORT = 15715
     REORG_LIMIT = 500
-    ESTIMATE_FEE = 0.0001
-    RELAY_FEE = 0.0001
+    ESTIMATE_FEE = 0.001
+    RELAY_FEE = 0.001
     PEERS = [
         'electrum1.blackcoin.nl t10001 s10002',
-        'electrum2.blackcoin.nl t20001 s20002',
-        'electrum3.blackcoin.nl t30001 s30002'
+        'electrum2.blackcoin.nl t20001 s20002'
     ]
 
 
@@ -1691,12 +1690,11 @@ class BlackcoinTestnet(Blackcoin):
     TX_PER_BLOCK = 2
     RPC_PORT = 25715
     REORG_LIMIT = 500
-    ESTIMATE_FEE = 0.0001
-    RELAY_FEE = 0.0001
+    ESTIMATE_FEE = 0.001
+    RELAY_FEE = 0.001
     PEERS = [
         'electrum1.blackcoin.nl t10011 s10012',
-        'electrum2.blackcoin.nl t20011 s20012',
-        'electrum3.blackcoin.nl t30011 s30012'
+        'electrum2.blackcoin.nl t20011 s20012'
     ]
 
 
