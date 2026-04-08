@@ -15,7 +15,7 @@ small - pull requests are welcome.
 ================ ========================
 Package          Notes
 ================ ========================
-Python3          ElectrumX uses asyncio.  Python version >= 3.8 is
+Python3          ElectrumX uses asyncio.  Python version >= 3.10 is
                  **required**.
 `aiohttp`_       Python library for asynchronous HTTP.  Version >=
                  2.0 required.
@@ -70,7 +70,7 @@ You will need to install one of:
 
 + `plyvel <https://plyvel.readthedocs.io/en/latest/installation.html>`_ for LevelDB.
 
-  Included as part of a regular pip or ``setup.py`` installation of ElectrumX.
+  Included as part of a regular pip installation of ElectrumX.
 + `python-rocksdb <https://pypi.python.org/pypi/python-rocksdb>`_ for RocksDB
 
   ``pip3 install python-rocksdb`` or use the rocksdb extra install option to ElectrumX.
@@ -94,9 +94,9 @@ There are many extra Python dependencies available to fit the needs of your
 system or coins. For example, to install the RocksDB dependencies and a faster
 JSON parsing library::
 
-    pip3 install .[rocksdb,ujson]
+    pip3 install ".[rocksdb,ujson]"
 
-see setup.py's ``extra_requires`` for a complete list.
+see pyproject.toml's ``project.optional-dependencies`` for a complete list.
 
 You can also run the code from the source tree or a copy of it.
 
@@ -118,7 +118,12 @@ live on an SSD::
 Process limits
 --------------
 
-You must ensure the ElectrumX process has a large open file limit.
+The ElectrumX process needs a large open file limit. On Linux systems,
+the default (:command:`ulimit -n`) (soft) open file limit is usually 1,024.
+ElectrumX tries to raise this automatically during startup to the hard limit,
+which is usually 100,000+. If that fails (which would get logged),
+you might have to manually increase the limit.
+
 During sync it should not need more than about 1,024 open files.  When
 serving it will use approximately 256 for LevelDB plus the number of
 incoming connections.  It is not unusual to have 1,000 to 2,000
