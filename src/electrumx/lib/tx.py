@@ -877,7 +877,9 @@ class DeserializerBlackcoinSegWit(DeserializerSegWit):
         version = self._get_version()
 
         if version < self.BLACKCOIN_TX_VERSION:
-            # Version 1 is always legacy with a timestamp
+            # Version 1: always legacy with a 4-byte nTime timestamp.
+            # Hard return here ensures the SegWit path below is never reached
+            # for V1 transactions, preventing false SegWit marker detection.
             tx = TxTime(
                 version=self._read_le_int32(),
                 time=self._read_le_uint32(),
@@ -890,7 +892,8 @@ class DeserializerBlackcoinSegWit(DeserializerSegWit):
             tx.txid = tx.wtxid = self.TX_HASH_FN(self.binary[orig_start:self.cursor])
             return tx, self.cursor - orig_start
 
-        # Version 2+ can be SegWit (standard marker/flag at offset 4)
+        # Version 2+: no nTime field, so byte offset 4 is the SegWit dummy marker,
+        # identical to standard Bitcoin serialization.
         if (self.cursor + 5 < self._binary_length and
                 self.binary[self.cursor + 4] == 0 and
                 self.binary[self.cursor + 5] != 0):
