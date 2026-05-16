@@ -1671,43 +1671,6 @@ class Blackcoin(ScryptMixin, Coin):
         'electrum2.blackcoin.nl t20001 s20002'
     ]
 
-    @classmethod
-    def block(cls, raw_block, height):
-        '''Blackcoin blocks include a 4-byte nFlags field after the 80-byte header.'''
-        header = cls.block_header(raw_block, height)
-        header_len = len(header)
-
-        # Some blocks (e.g., headers-only during certain sync phases) might be extremely short.
-        if len(raw_block) <= header_len:
-            # If the block is exactly the header size or less, there are no transactions
-            # This shouldn't happen for full blocks, but handles the IndexError safely.
-            import logging
-            logging.getLogger('electrumx').warning(
-                f"Encountered extremely short block at height {height} "
-                f"(len {len(raw_block)}). Returning empty txs."
-            )
-            txs = []
-        elif len(raw_block) < header_len + 5:  # Not enough bytes for nFlags + min nTx (1 byte)
-            # Fallback for unexpected short blocks.
-            txs = cls.DESERIALIZER(raw_block, start=header_len).read_tx_block()
-        else:
-            # We expect 4 bytes of nFlags (PoW/PoS) following the header.
-            # However, if this block does NOT have nFlags (e.g. an early non-compliant block)
-            # we should detect it. We know nFlags is either 0 or 1.
-            # If byte 80 is NOT 00 or 01, it's likely actually nTx (which could be 01,
-            # but followed by tx data).
-            # A more robust check is to try the +4 offset, and if it fails, fallback.
-            try:
-                txs = cls.DESERIALIZER(raw_block, start=header_len + 4).read_tx_block()
-            except Exception as e:
-                import logging
-                logging.getLogger('electrumx').info(
-                    f"Failed parsing block {height} with offset 84 ({e}). Trying offset 80."
-                )
-                txs = cls.DESERIALIZER(raw_block, start=header_len).read_tx_block()
-
-        return Block(raw_block, header, txs)
-
 
 class BlackcoinTestnet(Blackcoin):
     NAME = "BlackcoinTestnet"
