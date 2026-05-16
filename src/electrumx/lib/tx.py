@@ -831,44 +831,23 @@ class DeserializerTrezarcoin(Deserializer):
         return blake2s_hash.digest()
 
 
-class DeserializerBlackcoin(Deserializer):
-    BLACKCOIN_TX_VERSION = 2
-
-    def _get_version(self):
-        result, = unpack_le_int32_from(self.binary, self.cursor)
-        return result
-
-    def read_tx(self):
-        orig_start = self.cursor
-        start = self.cursor
-        version = self._get_version()
-        if version < self.BLACKCOIN_TX_VERSION:
-            tx = TxTime(
-                version=self._read_le_int32(),
-                time=self._read_le_uint32(),
-                inputs=self._read_inputs(),
-                outputs=self._read_outputs(),
-                locktime=self._read_le_uint32(),
-                txid=None,
-                wtxid=None,
-            )
-        else:
-            tx = Tx(
-                version=self._read_le_int32(),
-                inputs=self._read_inputs(),
-                outputs=self._read_outputs(),
-                locktime=self._read_le_uint32(),
-                txid=None,
-                wtxid=None,
-            )
-        tx.txid = tx.wtxid = self.TX_HASH_FN(self.binary[orig_start:self.cursor])
-        return tx
-
-
 class DeserializerBlackcoinSegWit(DeserializerSegWit):
+    '''Deserializer for Blackcoin transactions, supporting both legacy and SegWit formats.
+
+    Blackcoin transaction versions:
+      - Version 1: legacy format with a 4-byte nTime field after nVersion.
+                   No SegWit support. Used for all pre-SegWit transactions.
+      - Version 2: standard Bitcoin-compatible format, no nTime field.
+                   Supports both legacy (non-witness) and SegWit transactions.
+
+    The nTime field in V1 sits at byte offset 4, exactly where the SegWit dummy
+    marker (0x00) would appear in a Bitcoin transaction. This is why the version
+    check MUST be done before any SegWit marker detection.
+    '''
     BLACKCOIN_TX_VERSION = 2
 
     def _get_version(self):
+        '''Peek at the transaction version without advancing the cursor.'''
         result, = unpack_le_int32_from(self.binary, self.cursor)
         return result
 
