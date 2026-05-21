@@ -328,8 +328,9 @@ class Daemon:
             # Minimum relay fee for transactions in BTC/kvB, operator-configurable, static.
             'minrelaytxfee': mempool_info['minrelaytxfee'],
             # Minimum fee rate increment for mempool limiting or replacement in BTC/kvB,
-            # operator-configurable, static.
-            'incrementalrelayfee': mempool_info['incrementalrelayfee'],
+            # operator-configurable, static. Not all daemons provide this field;
+            # fall back to minrelaytxfee if absent.
+            'incrementalrelayfee': mempool_info.get('incrementalrelayfee', mempool_info['minrelaytxfee']),
         }
 
     async def getrawtransaction(self, hex_hash, verbose=False):
