@@ -21,3 +21,6 @@
 uv.lock
 /.venv
 /.coverage
+
+/.omo/
+AGENTS.MD
